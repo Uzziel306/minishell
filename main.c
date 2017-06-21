@@ -27,11 +27,62 @@ int				echo(char **c, t_msh *f)
 	return (0);
 }
 
+void		validation_echo(char **c, t_msh *f)
+{
+	int		i;
+
+	i 
+}
+
+char		**ft_lst_to_mtx(t_list *e, t_msh *f)
+{
+	int		i;
+	t_list	*tmp;
+	char	**mtx;
+
+	i = 0;
+	tmp = e;
+	while (tmp)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	mtx = (char**)malloc(sizeof(char*) * (i + 1));
+	tmp = e;
+	mtx[i] = NULL;
+	while (tmp)
+	{
+		mtx[--i] = ft_strdup(tmp->content);
+		tmp = tmp->next;
+	}
+	return (mtx);
+}
+
+static int			forkzazo(char **matrix, t_list *e, t_msh *f)
+{
+	pid_t	pid;
+	char	*path;
+
+	f->sh.env = ft_lst_to_mtx(e, f);
+	// ft_putmatrix(f->sh.env);
+	pid = fork();
+	if (pid == -1)
+		printf("error\n");
+	if (pid == 0)
+	{
+		if (execve("/bin/ls", matrix, f->sh.env) != -1)
+		return (0);
+	}
+
+	if (pid > 0)
+		pid = wait(0);
+	return (0);
+}
+
 void		get_command(char *str, t_msh *f, t_list *e)
 {
 	char	**matrix;
-	if (str)
-	{
+
 		matrix = ft_strsplit(str, ' ');
 		if (ft_strcmp(matrix[0], "pwd") == 0)
 			ft_printfcolor("%s\n", f->sh.path, 34);
@@ -40,17 +91,18 @@ void		get_command(char *str, t_msh *f, t_list *e)
 		else if (ft_strcmp(matrix[0], "echo") == 0)
 			echo(matrix, f);
 		else if (ft_strcmp(matrix[0], "ls") == 0)
-				execve("/bin/ls", matrix, NULL);
+				forkzazo(matrix, e, f);
 		else if (ft_strcmp(matrix[0], "cd") == 0)
-			cd_command(matrix, f);
+			validation_cd_command(matrix, f, e);
 		else if (ft_strcmp(matrix[0], "env") == 0)
 			ft_printlst(e);
 		else if (ft_strcmp(matrix[0], "setenv") == 0)
-			set_env(e, matrix);
+			setenv_validation(e, matrix, f);
+		else if (ft_strcmp(matrix[0], "unsetenv") == 0)
+			unsetenv_validation(e, matrix);
 		else
-			ft_printfbasic("%s: command not found\n", matrix[0]);
+			ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
 		ft_memdel((void**)&matrix);
-	}
 }
 
 void		get_path(t_msh *f)
@@ -101,14 +153,16 @@ int			main(int ac, char **argv, char **env)
 	f = (t_msh*)malloc(sizeof(t_msh));
 	zap(f);
 	get_shell(f);
-	e = get_env();
+	e = get_env(f);
 	while(42)
 	{
+		//ARREGLAR ENV CON EL CD COMMAND 1.1
 		ft_printfcolor("%s%s%s", "@", 33, f->sh.p_name, 33, "$>", 33);
 		get_next_line(0, &command);
 		if (ft_strlen(command))
 			get_command(command, f, e);
 	}
 	ft_memdel((void**)&f);
+	ft_memdel((void**)&e);
 	return (1);
 }
