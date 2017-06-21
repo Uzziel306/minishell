@@ -55,6 +55,7 @@ t_list		*get_env(t_msh *f);
 void		set_env(t_list *e, char *name, char *value);
 void		unsetenv_validation(t_list *e, char **name);
 int			unset_env(t_list *e, char *name, int i);
+int			validation_name(char *str);
 void		setenv_validation(t_list *e, char **mtx, t_msh *f);
 int			ft_matrixlen(char **matrix);
 int			ft_memdel_int(void **ap);

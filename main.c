@@ -1,37 +1,71 @@
 #include "minishell.h"
 
-int				echo(char **c, t_msh *f)
+int				echo(char *c, t_msh *f)
 {
-	zap(f);
-	while (c[f->axe.i] != NULL)
+	int i;
+
+	i = 0;
+	while (c[i] != '\0')
 	{
-		if (f->axe.i > 1)
-			ft_printfbasic(" ");
-		while (c[f->axe.i][f->axe.j] != '\0')
-		{
-			if (c[f->axe.i][f->axe.j] == '\\' && c[f->axe.i][f->axe.j + 1] == 'c')
-				return (0);
-			if (c[f->axe.i][f->axe.j] == '\\' && c[f->axe.i][f->axe.j + 1] == 'n')
-			{
-				ft_printfbasic("\n");
-				f->axe.j += 1;
-			}
-			else
-				ft_putchar(c[f->axe.i][f->axe.j]);
-			f->axe.j += 1;
-		}
-		f->axe.j = 0;
-		f->axe.i += 1;
+		if (c[i] == '\\' && c[i + 1] == 'c')
+			return (0);
+		if (c[i] == '\\' && c[i + 1] == 'n')
+			ft_printfbasic("\n");
+		else
+			ft_putchar(c[i]);
+		i++;
 	}
-	ft_printfbasic("\n");
 	return (0);
 }
 
-void		validation_echo(char **c, t_msh *f)
+void		ft_lstsearch(t_list *e, char *name)
+{
+	t_list	*tmp;
+	char	*i;
+	char	*tamp;
+	char	*res;
+
+	tmp = e;
+	while (tmp)
+	{
+		if ((i = ft_strchr(tmp->content, '=')))
+		{
+			tamp = ft_strsub(tmp->content, 0,  ft_strlen(tmp->content) - ft_strlen(i));
+			if (ft_strcmp(tamp, name) == 0)
+			{
+				res = ft_strsub(tmp->content, ft_strlen(name) + 1, ft_strlen(i));
+				ft_printfbasic("%s", res);
+				ft_memdel((void**)&res);
+			}
+			ft_memdel((void**)&tamp);
+		}
+		tmp = tmp->next;
+	}
+	free (tmp);
+}
+
+void		validation_echo(char **c, t_msh *f, t_list *e)
 {
 	int		i;
+	char	*tmp;
+	t_list	*tmp_node;
 
-	i 
+	tmp_node = e;
+	i = 0;
+	while (c[++i] != NULL)
+	{
+		if (i > 1)
+			ft_printfbasic(" ");
+		if (c[i][0] == '$')
+		{
+			tmp = ft_strsub(c[i], 1, ft_strlen(c[i]));
+			if (validation_name(tmp))
+				ft_lstsearch(e, tmp);
+		}
+		else if (!echo(c[i], f))
+			return ;
+	}
+	ft_printfbasic("\n");
 }
 
 char		**ft_lst_to_mtx(t_list *e, t_msh *f)
@@ -58,10 +92,9 @@ char		**ft_lst_to_mtx(t_list *e, t_msh *f)
 	return (mtx);
 }
 
-static int			forkzazo(char **matrix, t_list *e, t_msh *f)
+static int			forkzazo(char **matrix, t_list *e, t_msh *f, char *path)
 {
 	pid_t	pid;
-	char	*path;
 
 	f->sh.env = ft_lst_to_mtx(e, f);
 	// ft_putmatrix(f->sh.env);
@@ -70,7 +103,7 @@ static int			forkzazo(char **matrix, t_list *e, t_msh *f)
 		printf("error\n");
 	if (pid == 0)
 	{
-		if (execve("/bin/ls", matrix, f->sh.env) != -1)
+		if (execve(path, matrix, f->sh.env) != -1)
 		return (0);
 	}
 
@@ -79,30 +112,55 @@ static int			forkzazo(char **matrix, t_list *e, t_msh *f)
 	return (0);
 }
 
+int		path_command(char **mtx, t_msh *f, t_list *e)
+{
+	int		i;
+	char	**path_mtx;
+	char	*tmp;
+	char	*tmp2;
+
+
+	i = -1;
+	path_mtx = ft_strsplit(f->sh.p_bin, ':');
+	while (path_mtx[++i])
+	{
+		tmp2 = ft_strjoin(path_mtx[i], "/");
+		tmp = ft_strjoin(tmp2, mtx[0]);
+		if (access(tmp, X_OK) == 0)
+		{
+			forkzazo(mtx, e, f, tmp);
+			ft_memdel((void**)&tmp);
+			ft_memdel((void**)&tmp2);
+			return (1);
+		}
+	}
+	return (0);
+}
+
 void		get_command(char *str, t_msh *f, t_list *e)
 {
 	char	**matrix;
+	int		i;
 
-		matrix = ft_strsplit(str, ' ');
-		if (ft_strcmp(matrix[0], "pwd") == 0)
-			ft_printfcolor("%s\n", f->sh.path, 34);
-		else if (ft_strcmp(matrix[0], "exit") == 0)
-			exit (0);
-		else if (ft_strcmp(matrix[0], "echo") == 0)
-			echo(matrix, f);
-		else if (ft_strcmp(matrix[0], "ls") == 0)
-				forkzazo(matrix, e, f);
-		else if (ft_strcmp(matrix[0], "cd") == 0)
-			validation_cd_command(matrix, f, e);
-		else if (ft_strcmp(matrix[0], "env") == 0)
-			ft_printlst(e);
-		else if (ft_strcmp(matrix[0], "setenv") == 0)
-			setenv_validation(e, matrix, f);
-		else if (ft_strcmp(matrix[0], "unsetenv") == 0)
-			unsetenv_validation(e, matrix);
-		else
-			ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
-		ft_memdel((void**)&matrix);
+	i = 0;
+	matrix = ft_strsplit(str, ' ');
+	if (ft_strcmp(matrix[0], "pwd") == 0)
+		ft_printfcolor("%s\n", f->sh.path, 34);
+	else if (ft_strcmp(matrix[0], "exit") == 0)
+		exit (0);
+	else if (ft_strcmp(matrix[0], "echo") == 0)
+		validation_echo(matrix, f, e);
+	else if (ft_strcmp(matrix[0], "cd") == 0)
+		validation_cd_command(matrix, f, e);
+	else if (ft_strcmp(matrix[0], "env") == 0)
+		ft_printlst(e);
+	else if (ft_strcmp(matrix[0], "setenv") == 0)
+		setenv_validation(e, matrix, f);
+	else if (ft_strcmp(matrix[0], "unsetenv") == 0)
+		unsetenv_validation(e, matrix);
+	else if (!path_command(matrix, f, e))
+		ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
+	ft_memdel((void**)&matrix);
 }
 
 void		get_path(t_msh *f)
@@ -141,14 +199,29 @@ int		get_shell(t_msh *f)
 	return (0);
 }
 
+void		pre_get_command(char *str, t_msh *f, t_list *e)
+{
+	char	*i;
+	char	**multi_cmd;
+	int		j;
+
+	j = -1;
+	if ((i = ft_strchr(str, ';')))
+	{
+		multi_cmd = ft_strsplit(str, ';');
+		while (multi_cmd[++j])
+			get_command(multi_cmd[j], f, e);
+		ft_memdel((void**)&multi_cmd);
+	}
+	else
+		get_command(str, f, e);
+}
+
 int			main(int ac, char **argv, char **env)
 {
-	int				i;
 	char			*command;
-	char			*buf;
 	t_msh			*f;
 	t_list			*e;
-	t_list			*head;
 
 	f = (t_msh*)malloc(sizeof(t_msh));
 	zap(f);
@@ -156,11 +229,11 @@ int			main(int ac, char **argv, char **env)
 	e = get_env(f);
 	while(42)
 	{
-		//ARREGLAR ENV CON EL CD COMMAND 1.1
+		//TERMINAR LA LISTA.
 		ft_printfcolor("%s%s%s", "@", 33, f->sh.p_name, 33, "$>", 33);
 		get_next_line(0, &command);
 		if (ft_strlen(command))
-			get_command(command, f, e);
+			pre_get_command(command, f, e);
 	}
 	ft_memdel((void**)&f);
 	ft_memdel((void**)&e);
