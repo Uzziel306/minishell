@@ -10,12 +10,15 @@ int				echo(char *c, t_msh *f)
 		if (c[i] == '\\' && c[i + 1] == 'c')
 			return (0);
 		if (c[i] == '\\' && c[i + 1] == 'n')
+		{
 			ft_printfbasic("\n");
+			i++;
+		}
 		else
 			ft_putchar(c[i]);
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 void		ft_lstsearch(t_list *e, char *name)
@@ -96,7 +99,13 @@ static int			forkzazo(char **matrix, t_list *e, t_msh *f, char *path)
 {
 	pid_t	pid;
 
-	f->sh.env = ft_lst_to_mtx(e, f);
+	if (f->sh.env != NULL)
+		f->sh.env = ft_lst_to_mtx(e, f);
+	else
+	{
+		ft_memdel((void**)&f->sh.env);
+		f->sh.env = ft_lst_to_mtx(e, f);
+	}
 	// ft_putmatrix(f->sh.env);
 	pid = fork();
 	if (pid == -1)
@@ -137,14 +146,30 @@ int		path_command(char **mtx, t_msh *f, t_list *e)
 	return (0);
 }
 
+void		executable(char **mtx, t_msh *f, t_list *e)
+{
+	char	*tmp;
+	char	*tmp2;
+	char	*tmp3;
+
+	tmp2 = ft_strsub(mtx[0], 2, ft_strlen(mtx[0]));
+	tmp3 = ft_strjoin(f->sh.path, "/");
+	tmp = ft_strjoin(tmp3, tmp2);
+	forkzazo(mtx, e, f, tmp);
+	ft_memdel((void**)&tmp);
+	ft_memdel((void**)&tmp2);
+	ft_memdel((void**)&tmp3);
+}
+
 void		get_command(char *str, t_msh *f, t_list *e)
 {
 	char	**matrix;
-	int		i;
+	char	*i;
 
-	i = 0;
 	matrix = ft_strsplit(str, ' ');
-	if (ft_strcmp(matrix[0], "pwd") == 0)
+	if (matrix[0][0] == '.' && matrix[0][1] == '/')
+		executable(matrix, f, e);
+	else if (ft_strcmp(matrix[0], "pwd") == 0)
 		ft_printfcolor("%s\n", f->sh.path, 34);
 	else if (ft_strcmp(matrix[0], "exit") == 0)
 		exit (0);
