@@ -1,4 +1,0 @@
--Auto-complete
--multi cmd-
-//-echo with env_var-
-//-run exexutables-

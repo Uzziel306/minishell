@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-int				echo(char *c, t_msh *f)
+int			echo(char *c, t_msh *f)
 {
-	int i;
+	int		i;
 
 	i = 0;
 	while (c[i] != '\0')
@@ -25,9 +25,7 @@ void		validation_echo(char **c, t_msh *f, t_list *e)
 {
 	int		i;
 	char	*tmp;
-	t_list	*tmp_node;
 
-	tmp_node = e;
 	i = 0;
 	while (c[++i] != NULL)
 	{
@@ -38,6 +36,7 @@ void		validation_echo(char **c, t_msh *f, t_list *e)
 			tmp = ft_strsub(c[i], 1, ft_strlen(c[i]));
 			if (validation_name(tmp))
 				ft_lstsearch(e, tmp);
+			ft_memdel((void**)&tmp);
 		}
 		else if (!echo(c[i], f))
 			return ;

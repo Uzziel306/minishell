@@ -1,27 +1,5 @@
 #include "minishell.h"
 
-void		ft_lstaddnth(t_list *e, t_list	*new, int nb)
-{
-	t_list	*tmp;
-	int		i;
-
-	i = -1;
-	if (nb == 1)
-	{
-		new->next = e;
-		e = new;
-		return ;
-	}
-	tmp = e;
-	while (i < nb - 2)
-	{
-		tmp = tmp->next;
-		i++;
-	}
-	new->next = tmp->next;
-	tmp->next = new;
-}
-
 int		cutting_last_dir(char *path, t_msh *f)
 {
 	char	*tmp;
@@ -91,35 +69,21 @@ int			cd(char *path, t_msh *f, char **matrix_path, int i)
 void		validation_cd_command(char **matrix, t_msh *f, t_list *e)
 {
 	int		i;
-	t_list	*lst_tmp;
+	char	*old_pwd;
 
 	if (ft_matrixlen(matrix) == 1)
 	{
+		old_pwd = ft_strdup(f->sh.path);
 		f->sh.path = ft_strdup(f->sh.p_dir);
-		i = unset_env(e, "PWD", 0);
-		lst_tmp = ft_lstnew("PWD=/nfs/2016/a/asolis", 23);
-		ft_lstaddnth(e, lst_tmp, i);
+		chdir(f->sh.path);
+		ft_lstedit(e, "PWD", f->sh.path);
+		ft_lstedit(e, "OLDPWD", old_pwd);
+		ft_memdel((void**)&old_pwd);
 	}
 	else if (ft_matrixlen(matrix) == 2)
 		cd_command(matrix[1], f, e, 0);
 	else if (ft_matrixlen(matrix) >= 3)
 		ft_printfcolor("ERROR: TOO MANY ARGUMENTS\n", 31);
-}
-
-void		ft_lstedit(t_list *e, char *name, char *value)
-{
-	char	*tmp;
-	char	*tmp2;
-	int		i;
-	t_list	*lst_tmp;
-
-	i = unset_env(e, name, 0);
-	tmp = ft_strjoin(name, "=");
-	tmp2 = ft_strjoin(tmp, value);
-	lst_tmp = ft_lstnew(tmp2, ft_strlen(tmp2) + 1);
-	ft_lstaddnth(e, lst_tmp, i);
-	ft_memdel((void**)&tmp);
-	ft_memdel((void**)&tmp2);
 }
 
 void		cd_command(char *pwd, t_msh *f, t_list *e, int i)
@@ -137,4 +101,5 @@ void		cd_command(char *pwd, t_msh *f, t_list *e, int i)
 			ft_lstedit(e, "PWD", f->sh.path);
 			ft_lstedit(e, "OLDPWD", old_pwd);
 		}
+	ft_memdel((void**)&old_pwd);
 }

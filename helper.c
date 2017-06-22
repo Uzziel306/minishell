@@ -32,12 +32,15 @@ void		ft_putmatrix(char **matrix)
 		ft_printfbasic("%s\n", matrix[i]);
 }
 
-int			ft_memdel_int(void **ap)
+void		ft_printlst(t_list *e)
 {
-	if (ap)
+	t_list	*tmp;
+
+	tmp = e;
+	while (tmp)
 	{
-		free(*ap);
-		*ap = NULL;
+		ft_printfbasic("%s\n", tmp->content);
+		tmp = tmp->next;
 	}
-	return (0);
+	free(tmp);
 }
