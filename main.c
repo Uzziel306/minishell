@@ -3,7 +3,6 @@
 void					get_command(char *str, t_msh *f, t_list *e)
 {
 	char				**matrix;
-	char				*i;
 
 	matrix = ft_strsplit(str, ' ');
 	if (matrix[0][0] == '.' && matrix[0][1] == '/')
@@ -63,7 +62,7 @@ void				pre_get_command(char *str, t_msh *f, t_list *e)
 		get_command(str, f, e);
 }
 
-int					main(int ac, char **argv, char **env)
+int					main(void)
 {
 	char			*command;
 	t_msh			*f;
@@ -81,6 +80,7 @@ int					main(int ac, char **argv, char **env)
 		if (ft_strlen(command))
 			pre_get_command(command, f, e);
 	}
+	ft_memdel((void**)&command);
 	ft_memdel((void**)&f);
 	ft_lstdel(&e, ft_bzero);
 	return (1);

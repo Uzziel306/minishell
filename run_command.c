@@ -23,12 +23,12 @@ static int			forkzazo(char **matrix, t_list *e, t_msh *f, char *path)
 	pid_t	pid;
 
 	if (f->sh.env != NULL)
-		f->sh.env = ft_lst_to_mtx(e, f);
-	else
 	{
 		ft_memdel((void**)&f->sh.env);
 		f->sh.env = ft_lst_to_mtx(e, f);
 	}
+	else
+		f->sh.env = ft_lst_to_mtx(e, f);
 	pid = fork();
 	if (pid == -1)
 		ft_printfcolor("ERROR: RUNING\n", 31);
@@ -59,11 +59,13 @@ int		path_command(char **mtx, t_msh *f, t_list *e)
 		if (access(tmp, X_OK) == 0)
 		{
 			forkzazo(mtx, e, f, tmp);
+			ft_memdel((void**)&path_mtx);
 			ft_memdel((void**)&tmp);
 			ft_memdel((void**)&tmp2);
 			return (1);
 		}
 	}
+	ft_memdel((void**)&path_mtx);
 	return (0);
 }
 
