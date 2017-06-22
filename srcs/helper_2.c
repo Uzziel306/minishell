@@ -1,29 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlennum.c                                     :+:      :+:    :+:   */
+/*   helper_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/06/22 05:51:06 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:51:27 by asolis           ###   ########.fr       */
+/*   Created: 2017/06/22 05:23:45 by asolis            #+#    #+#             */
+/*   Updated: 2017/06/22 05:23:47 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlennum(char *str)
+int			ft_memdel_int(void **ap)
 {
-	size_t i;
-	size_t j;
-
-	i = 0;
-	j = 0;
-	while (str[i] != '\0')
+	if (ap)
 	{
-		if (str[i] >= '0' && str[i] <= '9')
-			j++;
-		i++;
+		free(*ap);
+		*ap = NULL;
 	}
-	return (j);
+	return (0);
+}
+
+int			ft_ismayus(int c)
+{
+	if (c >= 'A' && c <= 'Z')
+		return (1);
+	return (0);
+}
+
+void		free_shit(char *a, char *b, char *c)
+{
+	ft_memdel((void**)&a);
+	ft_memdel((void**)&b);
+	ft_memdel((void**)&c);
 }

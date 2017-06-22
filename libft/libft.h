@@ -6,7 +6,7 @@
 /*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 21:11:34 by asolis            #+#    #+#             */
-/*   Updated: 2017/01/09 21:11:38 by asolis           ###   ########.fr       */
+/*   Updated: 2017/06/22 05:48:00 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 
 # define BUFF_SIZE	9000
 
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include <uuid/uuid.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdarg.h>
+# include <stdio.h>
+# include <time.h>
+# include <stdlib.h>
+# include <sys/stat.h>
+# include <pwd.h>
+# include <uuid/uuid.h>
+# include <string.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <stdarg.h>
 
 typedef struct		s_list
 {
