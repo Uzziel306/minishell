@@ -36,6 +36,8 @@ int			simple_path(char *path, t_msh *f)
 	char	*tmp;
 	char	*tmp2;
 
+	if (ft_strcmp(".", path) == 0)
+		return (0);
 	tmp2 = ft_strjoin("/", path);
 	tmp = ft_strjoin(f->sh.tmp_path, tmp2);
 	if (access(tmp, R_OK) == -1)

@@ -99,7 +99,6 @@ void			setenv_validation(t_list *e, char **mtx, t_msh *f)
 		if (mtx[2][0] == '(' && mtx[i - 1][ft_strlen(mtx[i - 1]) - 1] == ')')
 			multi_setenv(e, mtx, i, f);
 		else
-			ft_printfcolor("%s\n", "ERROR: FOR MULTI VALUES
-USE '(value1 value2 ...)'\n", 31);
+			ft_printfcolor("%s\n", "ERROR: FOR MULTI VALUES\n", 31);
 	}
 }
