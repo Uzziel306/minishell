@@ -12,17 +12,17 @@
 
 #include "minishell.h"
 
-void				get_command(char *str, t_msh *f, t_list *e)
+void				get_command(char *str, t_msh *f, t_list *e, char **line)
 {
 	char			**matrix;
 
 	matrix = ft_strsplit(str, ' ');
 	if (matrix[0][0] == '.' && matrix[0][1] == '/')
-		executable(matrix, f, e);
+		executable(matrix, e);
 	else if (ft_strcmp(matrix[0], "pwd") == 0)
-		ft_printfcolor("%s\n", f->sh.path, 34);
+		ft_printfcolor("%s\n", getcwd(NULL, 0), 34);
 	else if (ft_strcmp(matrix[0], "exit") == 0)
-		exitazo(e, f);
+		exitazo(e, f, matrix, *line);
 	else if (ft_strcmp(matrix[0], "echo") == 0)
 		validation_echo(matrix, e);
 	else if (ft_strcmp(matrix[0], "cd") == 0)
@@ -56,7 +56,7 @@ int					get_shell(t_msh *f)
 	return (0);
 }
 
-void				pre_get_command(char *str, t_msh *f, t_list *e)
+void				pre_get_command(char *str, t_msh *f, t_list *e, char **comand)
 {
 	char			*i;
 	char			**multi_cmd;
@@ -67,11 +67,11 @@ void				pre_get_command(char *str, t_msh *f, t_list *e)
 	{
 		multi_cmd = ft_strsplit(str, ';');
 		while (multi_cmd[++j])
-			get_command(multi_cmd[j], f, e);
+			get_command(multi_cmd[j], f, e, comand);
 		ft_memdel((void**)&multi_cmd);
 	}
 	else
-		get_command(str, f, e);
+		get_command(str, f, e, comand);
 }
 
 int					main(void)
@@ -81,7 +81,6 @@ int					main(void)
 	t_list			*e;
 
 	f = (t_msh*)malloc(sizeof(t_msh));
-	zap(f);
 	e = get_env(f);
 	get_shell(f);
 	while (42)
@@ -89,10 +88,9 @@ int					main(void)
 		ft_printfcolor("%s%s%s", "@", 33, f->sh.p_name, 33, "$>", 33);
 		get_next_line(0, &command);
 		if (ft_strlen(command))
-			pre_get_command(command, f, e);
+			pre_get_command(command, f, e, &command);
+		ft_memdel((void**)&command);
 	}
-	ft_memdel((void**)&command);
 	ft_lstdel(&e, ft_bzero);
-	f = (t_msh*)malloc(sizeof(t_msh));
 	return (1);
 }

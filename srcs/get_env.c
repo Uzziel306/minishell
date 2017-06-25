@@ -81,6 +81,7 @@ void			multi_setenv(t_list *e, char **values, int len, t_msh *f)
 	}
 	f->axe.tmp = ft_strcat(f->axe.tmp, f->axe.end);
 	set_env(e, values[1], f->axe.tmp);
+	free_shit(f->axe.tmp, f->axe.start, f->axe.end);
 }
 
 void			setenv_validation(t_list *e, char **mtx, t_msh *f)
@@ -91,7 +92,7 @@ void			setenv_validation(t_list *e, char **mtx, t_msh *f)
 	if ((i = ft_matrixlen(mtx)) == 1)
 		ft_printlst(e);
 	else if (!validation_name(mtx[1]))
-		ft_printfcolor("%s\n", "ERROR: THE NAME SHALL BE IN MAYUS", 31);
+		ft_printfcolor("%s\n", "ERROR: THE NAME MUST BE IN MAYUS", 31);
 	else if (i == 3)
 		set_env(e, mtx[1], mtx[2]);
 	else if (i > 3)

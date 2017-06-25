@@ -12,10 +12,10 @@
 
 #include "minishell.h"
 
-void		ft_error_path(t_msh *f)
+void		ft_error_path(char *pwd)
 {
 	ft_printfbasic("-bash: cd: ");
-	ft_printfbasic("%s", f->sh.direction);
+	ft_printfbasic("%s", pwd);
 	ft_printfbasic(": No such file or directory\n");
 }
 

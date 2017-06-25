@@ -12,8 +12,9 @@
 
 #include "minishell.h"
 
-void	exitazo(t_list *e, t_msh *f)
+void	exitazo(t_list *e, t_msh *f, char **mtx,  char *line)
 {
+	ft_memdel((void**)&mtx);
 	ft_memdel((void**)&f->sh.p_bin);
 	ft_memdel((void**)&f->sh.p_dir);
 	ft_memdel((void**)&f->sh.p_name);
@@ -22,12 +23,9 @@ void	exitazo(t_list *e, t_msh *f)
 	ft_memdel((void**)&f->sh.path);
 	ft_memdel((void**)&f->sh.tmp_path);
 	ft_memdel((void**)&f->sh.mtx);
-	ft_memdel((void**)&f->sh.direction);
 	ft_memdel((void**)&f->sh.env);
-	ft_memdel((void**)&f->axe.start);
-	ft_memdel((void**)&f->axe.end);
-	ft_memdel((void**)&f->axe.tmp);
 	ft_memdel((void**)&f);
+	ft_memdel((void**)&line);
 	ft_lstdel(&e, ft_bzero);
 	exit(0);
 }

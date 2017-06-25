@@ -47,6 +47,8 @@ ft_strlen(tmp->content) - ft_strlen(x));
 			if (ft_strcmp(tamp, name) == 0)
 			{
 				ft_lstdeletenode(e, i + 1);
+				ft_memdel((void**)&tmp);
+				ft_memdel((void**)&tamp);
 				return (i);
 			}
 		}

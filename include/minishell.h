@@ -36,7 +36,6 @@ typedef struct		s_shll
 	char			*path;
 	char			*tmp_path;
 	char			**mtx;
-	char			*direction;
 	char			**env;
 }					t_shll;
 
@@ -68,10 +67,11 @@ char				**ft_lst_to_mtx(t_list *e);
 ** cd command functions used in the proyect.. cd_command.c
 */
 void				validation_cd_command(char **matrix, t_msh *f, t_list *e);
-void				cd_command(char *pwd, t_msh *f, t_list *e, int i);
-int					cutting_last_dir(char *path, t_msh *f);
-int					simple_path(char *path, t_msh *f);
-int					cd(char *path, t_msh *f, char **matrix_path, int i);
+void				cd_command_len_1(t_msh *f, t_list *e);
+void				cd_command(char *pwd, t_list *e, int i);
+int					cutting_last_dir(char *path);
+int					simple_path(char *path);
+int					cd(char *path, char **matrix_path, int i);
 /*
 ** echo command functions used in the proyect.. echo_command.c
 */
@@ -93,7 +93,7 @@ int					unset_env(t_list *e, char *name, int i);
 /*
 ** helper functions used in the proyect.. helper.c helper_2.c
 */
-void				ft_error_path(t_msh *f);
+void				ft_error_path(char *pwd);
 void				zap(t_msh *f);
 void				ft_putmatrix(char **matrix);
 void				ft_printlst(t_list *e);
@@ -104,17 +104,17 @@ int					ft_ismayus(int c);
 /*
 ** main functions used in the proyect.. main.c
 */
-void				get_command(char *str, t_msh *f, t_list *e);
-void				pre_get_command(char *str, t_msh *f, t_list *e);
+void				get_command(char *str, t_msh *f, t_list *e, char **line);
+void				pre_get_command(char *str, t_msh *f, t_list *e, char **comand);
 int					get_shell(t_msh *f);
 /*
 ** run commands functions used in the proyect.. run_command.c
 */
 void				get_path(t_msh *f);
-void				executable(char **mtx, t_msh *f, t_list *e);
+void				executable(char **mtx, t_list *e);
 int					path_command(char **mtx, t_msh *f, t_list *e);
 /*
 ** exit function used in the proyect.. run_command.c
 */
-void				exitazo(t_list *e, t_msh *f);
+void				exitazo(t_list *e, t_msh *f, char **mtx,  char *line);
 #endif

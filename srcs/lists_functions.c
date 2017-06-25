@@ -114,12 +114,12 @@ void		ft_lstdeletenode(t_list *e, int nb)
 	if (nb == 1)
 	{
 		e = tmp->next;
-		free(tmp);
+		ft_memdel((void**)tmp);
 		return ;
 	}
 	while (++i < nb - 2)
 		tmp = tmp->next;
 	tmp2 = tmp->next;
 	tmp->next = tmp2->next;
-	free(tmp2);
+	ft_memdel((void**)tmp2);
 }

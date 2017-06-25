@@ -30,27 +30,23 @@ void			get_path(t_msh *f)
 	}
 }
 
-static int		forkzazo(char **matrix, t_list *e, t_msh *f, char *path)
+static int		forkzazo(char **matrix, t_list *e, char *path)
 {
 	pid_t		pid;
+	char		**env;
 
-	if (f->sh.env != NULL)
-	{
-		ft_memdel((void**)&f->sh.env);
-		f->sh.env = ft_lst_to_mtx(e);
-	}
-	else
-		f->sh.env = ft_lst_to_mtx(e);
+	env = ft_lst_to_mtx(e);
 	pid = fork();
 	if (pid == -1)
 		ft_printfcolor("ERROR: RUNING\n", 31);
 	if (pid == 0)
 	{
-		if (execve(path, matrix, f->sh.env) != -1)
+		if (execve(path, matrix, env) != -1)
 			return (0);
 	}
 	if (pid > 0)
 		pid = wait(0);
+	ft_memdel((void**)&env);
 	return (0);
 }
 
@@ -69,7 +65,7 @@ int				path_command(char **mtx, t_msh *f, t_list *e)
 		tmp = ft_strjoin(tmp2, mtx[0]);
 		if (access(tmp, X_OK) == 0)
 		{
-			forkzazo(mtx, e, f, tmp);
+			forkzazo(mtx, e, tmp);
 			ft_memdel((void**)&path_mtx);
 			ft_memdel((void**)&tmp);
 			ft_memdel((void**)&tmp2);
@@ -80,16 +76,16 @@ int				path_command(char **mtx, t_msh *f, t_list *e)
 	return (0);
 }
 
-void			executable(char **mtx, t_msh *f, t_list *e)
+void			executable(char **mtx, t_list *e)
 {
 	char		*tmp;
 	char		*tmp2;
 	char		*tmp3;
 
 	tmp2 = ft_strsub(mtx[0], 2, ft_strlen(mtx[0]));
-	tmp3 = ft_strjoin(f->sh.path, "/");
+	tmp3 = ft_strjoin(getcwd(NULL, 0), "/");
 	tmp = ft_strjoin(tmp3, tmp2);
-	forkzazo(mtx, e, f, tmp);
+	forkzazo(mtx, e, tmp);
 	ft_memdel((void**)&tmp);
 	ft_memdel((void**)&tmp2);
 	ft_memdel((void**)&tmp3);
