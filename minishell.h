@@ -29,14 +29,8 @@
 typedef struct		s_shll
 {
 	char			*p_bin;
-	char			*p_dir;
-	char			*p_name;
-	char			*c_wd;
-	char			*p_shell;
-	char			*path;
-	char			*tmp_path;
-	char			**mtx;
-	char			**env;
+	char			*p_home;
+	char			*p_user;
 }					t_shll;
 
 typedef struct		s_axe
@@ -104,8 +98,8 @@ int					ft_ismayus(int c);
 /*
 ** main functions used in the proyect.. main.c
 */
-void				get_command(char *str, t_msh *f, t_list *e, char **line);
-void				pre_get_command(char *str, t_msh *f, t_list *e, char **comand);
+void				get_command(char *str, t_msh *f, t_list *e);
+void				pre_get_command(char *str, t_msh *f, t_list *e);
 int					get_shell(t_msh *f);
 /*
 ** run commands functions used in the proyect.. run_command.c
@@ -116,5 +110,5 @@ int					path_command(char **mtx, t_msh *f, t_list *e);
 /*
 ** exit function used in the proyect.. run_command.c
 */
-void				exitazo(t_list *e, t_msh *f, char **mtx,  char *line);
+void				exitazo(t_list *e, t_msh *f);
 #endif

@@ -55,7 +55,6 @@ ft_strlen(tmp->content) - ft_strlen(x));
 		i++;
 		tmp = tmp->next;
 	}
-	ft_printfcolor("ERROR: VALUE NOT FOUNDED\n", 31);
 	ft_memdel((void**)&tmp);
 	ft_memdel((void**)&tamp);
 	return (0);

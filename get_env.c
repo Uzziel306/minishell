@@ -71,6 +71,8 @@ void			multi_setenv(t_list *e, char **values, int len, t_msh *f)
 		cont += ft_strlen(values[i]);
 	cont += len - 2;
 	i = 2;
+	if (f->axe.tmp != NULL)
+		ft_memdel((void**)&f->axe.tmp);
 	f->axe.tmp = (char*)malloc(sizeof(char) * (cont));
 	f->axe.tmp = ft_strcat(f->axe.tmp, f->axe.start);
 	f->axe.tmp = ft_strcat(f->axe.tmp, ":");

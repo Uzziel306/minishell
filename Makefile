@@ -1,36 +1,6 @@
-##=-  Compilatator -=##
+NAME	= minishell
 
-NAME = minishell
-CC = gcc
-
-
-##=-  FLAGS -=##
-
-CFLAGS = -Wall -Wextra -g3 #-Werror
-
-
-##=-  PATH -=##
-
-OBJPATH = obj
-SRCPATH = srcs
-LIBFT_PATH = libft
-
-INCLUDE_PATH = include/
-
-##=-  Rules -=##
-
-LIBFT = -L $(LIBFT_PATH)
-LIBS = $(LIBFT) -lft
-
-INCLUDES = -I./ -I $(LIBFT_PATH)/includes -I $(INCLUDE_PATH)
-
-
-##=-  Files -=##
-
-OBJ = $(SRC:$(SRCPATH)/%.c=$(OBJPATH)/%.o)
-SRC = $(addprefix $(SRCPATH)/,$(SRCSFILES))
-
-SRCSFILES	=	main.c \
+SRC		=	main.c \
 			unsetenv.c \
 			echo_command.c \
 			helper.c \
@@ -41,27 +11,26 @@ SRCSFILES	=	main.c \
 			lists_functions.c \
 			exit.c
 
-##=-  Process -=##
+OBJ		= $(SRC:.c=.o)
+
+CFLAGS	= -Wall -Wextra -Werror
+
+CC		= gcc
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-#	@echo "\n\033[33mProcessing\n\033[0m"
-	@$(MAKE) -C libft/
-	@$(CC) -o $@ $(CFLAGS) $(OBJ) $(LIBS)
-#	@echo "\n\033[33mEnd of the Process\n\033[0m"
-
-$(OBJ): $(OBJPATH)/%.o : $(SRCPATH)/%.c
-	@mkdir -p $(dir $@)
-#	@echo "\033[32m"
-	@$(CC) -o $@ $(CFLAGS) $(INCLUDES) -c $<
-#	@echo "\033[0m"
+	@make -C libft/
+	@$(CC) $(OBJ) -o $(NAME) -L libft/ -lft
+	@echo "\033[32mMinishell: Built minishell. (˘▾˘) \033[0m"
 
 clean:
-	@/bin/rm -rf $(OBJPATH)
+	@make -C libft/ clean
+	@rm -rf $(OBJ)
+	@echo "\033[32mminishell: Cleaned up object files. (˘▾˘) \033[0m"
 
 fclean: clean
-	@/bin/rm -rf $(NAME)
+	@$(MAKE) -C ./libft/ fclean
+	@rm -rf $(NAME) $(OBJ)
 
-re:
-	fclean all
+re: fclean $(NAME)

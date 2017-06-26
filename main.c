@@ -12,7 +12,19 @@
 
 #include "minishell.h"
 
-void				get_command(char *str, t_msh *f, t_list *e, char **line)
+char				*readline()
+{
+	char			buffsazo[1025];
+	int				ret;
+	char			*line;
+
+	ret = read(0, buffsazo, 1024);
+	buffsazo[ret - 1] = '\0';
+	line = ft_strsub(buffsazo, 0, ft_strlen(buffsazo));
+	return (line);
+}
+
+void				get_command(char *str, t_msh *f, t_list *e)
 {
 	char			**matrix;
 
@@ -21,8 +33,6 @@ void				get_command(char *str, t_msh *f, t_list *e, char **line)
 		executable(matrix, e);
 	else if (ft_strcmp(matrix[0], "pwd") == 0)
 		ft_printfcolor("%s\n", getcwd(NULL, 0), 34);
-	else if (ft_strcmp(matrix[0], "exit") == 0)
-		exitazo(e, f, matrix, *line);
 	else if (ft_strcmp(matrix[0], "echo") == 0)
 		validation_echo(matrix, e);
 	else if (ft_strcmp(matrix[0], "cd") == 0)
@@ -40,23 +50,34 @@ void				get_command(char *str, t_msh *f, t_list *e, char **line)
 
 int					get_shell(t_msh *f)
 {
-	struct stat		stat;
-	struct passwd	*pw;
+	extern char		**environ;
+	int				i;
 
-	if (lstat(".", &stat) == -1)
-		return (0);
-	if ((pw = getpwuid(stat.st_uid)) == NULL)
-		return (0);
 	get_path(f);
-	f->sh.p_dir = ft_strdup(pw->pw_dir);
-	f->sh.p_name = ft_strdup(pw->pw_name);
-	f->sh.c_wd = ft_strdup(getcwd(NULL, 0));
-	f->sh.p_shell = ft_strdup(pw->pw_shell);
-	f->sh.path = ft_strdup(f->sh.c_wd);
+	i = -1;
+	while (environ[++i] != NULL)
+	{
+		if (environ[i][4])
+		{
+			if (environ[i][0] == 'H' && environ[i][1] == 'O' &&
+				environ[i][2] == 'M' && environ[i][3] == 'E')
+				f->sh.p_home = ft_strsub(environ[i], 5, ft_strlen(environ[i]));
+		}
+	}
+	i = -1;
+	while (environ[++i] != NULL)
+	{
+		if (environ[i][4])
+		{
+			if (environ[i][0] == 'U' && environ[i][1] == 'S' &&
+				environ[i][2] == 'E' && environ[i][3] == 'R')
+				f->sh.p_user = ft_strsub(environ[i], 5, ft_strlen(environ[i]));
+		}
+	}
 	return (0);
 }
 
-void				pre_get_command(char *str, t_msh *f, t_list *e, char **comand)
+void				pre_get_command(char *str, t_msh *f, t_list *e)
 {
 	char			*i;
 	char			**multi_cmd;
@@ -67,11 +88,11 @@ void				pre_get_command(char *str, t_msh *f, t_list *e, char **comand)
 	{
 		multi_cmd = ft_strsplit(str, ';');
 		while (multi_cmd[++j])
-			get_command(multi_cmd[j], f, e, comand);
+			get_command(multi_cmd[j], f, e);
 		ft_memdel((void**)&multi_cmd);
 	}
 	else
-		get_command(str, f, e, comand);
+		get_command(str, f, e);
 }
 
 int					main(void)
@@ -85,12 +106,15 @@ int					main(void)
 	get_shell(f);
 	while (42)
 	{
-		ft_printfcolor("%s%s%s", "@", 33, f->sh.p_name, 33, "$>", 33);
-		get_next_line(0, &command);
+		ft_printfcolor("%s%s%s", "@", 33, f->sh.p_user, 33, "$>", 33);
+		command = readline();
+		if (ft_strcmp(command, "exit") == 0)
+			break ;
 		if (ft_strlen(command))
-			pre_get_command(command, f, e, &command);
+			pre_get_command(command, f, e);
 		ft_memdel((void**)&command);
 	}
-	ft_lstdel(&e, ft_bzero);
+	ft_memdel((void**)&command);
+	exitazo(e, f);
 	return (1);
 }

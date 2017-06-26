@@ -42,7 +42,7 @@ void		cd_command_len_1(t_msh *f, t_list *e)
 	char	*new_pwd;
 
 	old_pwd = ft_strdup(getcwd(NULL, 0));
-	new_pwd = ft_strdup(f->sh.p_dir);
+	new_pwd = ft_strdup(f->sh.p_home);
 	if ((chdir(new_pwd)) == 0)
 	{
 		ft_lstedit(e, "PWD", new_pwd);
