@@ -19,6 +19,11 @@ char				*readline()
 	char			*line;
 
 	ret = read(0, buffsazo, 1024);
+	if (ret == 0)
+	{
+		line = ft_strdup("exit");
+		return (line);
+	}
 	buffsazo[ret - 1] = '\0';
 	line = ft_strsub(buffsazo, 0, ft_strlen(buffsazo));
 	return (line);
