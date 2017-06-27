@@ -34,8 +34,21 @@ void			set_env(t_list *e, char *name, char *value)
 {
 	char		*tmp;
 	char		*tmp2;
+	char		*special;
 	t_list		*env_node;
 
+	if (value[0] == '"' && value[ft_strlen(value) - 1] == '"')
+		{
+			special = ft_strsub(value, 1, ft_strlen(value) - 2);
+			tmp2 = ft_strjoin(name, "=");
+			tmp = ft_strjoin(tmp2, special);
+			env_node = ft_lstnew(tmp, ft_strlen(tmp) + 1);
+			ft_lstaddback(&e, env_node);
+			ft_memdel((void**)&special);
+			ft_memdel((void**)&tmp);
+			ft_memdel((void**)&tmp2);
+			return ;
+		}
 	tmp2 = ft_strjoin(name, "=");
 	tmp = ft_strjoin(tmp2, value);
 	env_node = ft_lstnew(tmp, ft_strlen(tmp) + 1);

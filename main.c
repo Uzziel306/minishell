@@ -34,6 +34,8 @@ void				get_command(char *str, t_msh *f, t_list *e)
 	char			**matrix;
 
 	matrix = ft_strsplit(str, ' ');
+	if (matrix[0] != NULL)
+	{
 	if (matrix[0][0] == '.' && matrix[0][1] == '/')
 		executable(matrix, e);
 	else if (ft_strcmp(matrix[0], "pwd") == 0)
@@ -48,8 +50,9 @@ void				get_command(char *str, t_msh *f, t_list *e)
 		setenv_validation(e, matrix, f);
 	else if (ft_strcmp(matrix[0], "unsetenv") == 0)
 		unsetenv_validation(e, matrix);
-	else if (!path_command(matrix, f, e))
+	else if (!path_command(matrix, e))
 		ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
+	}
 	ft_memdel((void**)&matrix);
 }
 
@@ -58,7 +61,6 @@ int					get_shell(t_msh *f)
 	extern char		**environ;
 	int				i;
 
-	get_path(f);
 	i = -1;
 	while (environ[++i] != NULL)
 	{

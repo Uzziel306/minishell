@@ -62,10 +62,10 @@ char				**ft_lst_to_mtx(t_list *e);
 */
 void				validation_cd_command(char **matrix, t_msh *f, t_list *e);
 void				cd_command_len_1(t_msh *f, t_list *e);
-void				cd_command(char *pwd, t_list *e, int i);
+void				cd_command(char *pwd, t_list *e, int i, t_msh *f);
 int					cutting_last_dir(char *path);
-int					simple_path(char *path);
-int					cd(char *path, char **matrix_path, int i);
+int					simple_path(char *path, t_msh *f);
+int					cd(char *path, char **matrix_path, int i, t_msh *f);
 /*
 ** echo command functions used in the proyect.. echo_command.c
 */
@@ -104,9 +104,9 @@ int					get_shell(t_msh *f);
 /*
 ** run commands functions used in the proyect.. run_command.c
 */
-void				get_path(t_msh *f);
+char				*get_path(t_list *e);
 void				executable(char **mtx, t_list *e);
-int					path_command(char **mtx, t_msh *f, t_list *e);
+int					path_command(char **mtx, t_list *e);
 /*
 ** exit function used in the proyect.. run_command.c
 */

@@ -12,22 +12,26 @@
 
 #include "minishell.h"
 
-void			get_path(t_msh *f)
+char			*get_path(t_list *e)
 {
-	extern char	**environ;
-	int			i;
+	char	*tmp_path;
+	char	*tmp_pwd;
+	t_list	*tmp;
 
-	i = 0;
-	while (environ[i] != NULL)
+	tmp = e;
+	while (tmp)
 	{
-		if (environ[i][4])
+		tmp_path = ft_strsub(tmp->content, 0, 4);
+		if (ft_strcmp(tmp_path, "PATH") == 0)
 		{
-			if (environ[i][0] == 'P' && environ[i][1] == 'A' &&
-				environ[i][2] == 'T' && environ[i][3] == 'H')
-				f->sh.p_bin = ft_strsub(environ[i], 5, ft_strlen(environ[i]));
+			tmp_pwd = ft_strsub(tmp->content, 5, ft_strlen(tmp->content));
+			return(tmp_pwd);
 		}
-		i++;
+		ft_memdel((void**)&tmp_path);
+		tmp = tmp->next;
 	}
+	free(tmp);
+	return (0);
 }
 
 static int		forkzazo(char **matrix, t_list *e, char *path)
@@ -42,7 +46,11 @@ static int		forkzazo(char **matrix, t_list *e, char *path)
 	if (pid == 0)
 	{
 		if (execve(path, matrix, env) != -1)
-			return (0);
+		{
+			ft_memdel((void**)&env);
+			return (1);
+		}
+
 	}
 	if (pid > 0)
 		pid = wait(0);
@@ -50,15 +58,23 @@ static int		forkzazo(char **matrix, t_list *e, char *path)
 	return (0);
 }
 
-int				path_command(char **mtx, t_msh *f, t_list *e)
+int				bin_command(char **mtx, t_list *e)
+{
+	if (access(mtx[0], X_OK) == 0)
+	{
+		forkzazo(mtx, e, mtx[0]);
+		return (1);
+	}
+	return (0);
+}
+
+int				command(char  **path_mtx, char **mtx, t_list *e)
 {
 	int			i;
-	char		**path_mtx;
 	char		*tmp;
 	char		*tmp2;
 
 	i = -1;
-	path_mtx = ft_strsplit(f->sh.p_bin, ':');
 	while (path_mtx[++i])
 	{
 		tmp2 = ft_strjoin(path_mtx[i], "/");
@@ -66,12 +82,30 @@ int				path_command(char **mtx, t_msh *f, t_list *e)
 		if (access(tmp, X_OK) == 0)
 		{
 			forkzazo(mtx, e, tmp);
-			ft_memdel((void**)&path_mtx);
 			ft_memdel((void**)&tmp);
 			ft_memdel((void**)&tmp2);
 			return (1);
 		}
 	}
+	return (0);
+}
+
+int				path_command(char **mtx, t_list *e)
+{
+	char		**path_mtx;
+	char		*tmp_path;
+
+	if ((bin_command(mtx, e)))
+		return (1);
+	tmp_path = get_path(e);
+	path_mtx = ft_strsplit(tmp_path, ':');
+	if (command(path_mtx, mtx, e))
+	{
+		ft_memdel((void**)&tmp_path);
+		ft_memdel((void**)&path_mtx);
+		return (1);
+	}
+	ft_memdel((void**)&tmp_path);
 	ft_memdel((void**)&path_mtx);
 	return (0);
 }

@@ -36,11 +36,16 @@ int			cutting_last_dir(char *path)
 	return (1);
 }
 
-int			simple_path(char *path)
+int			simple_path(char *path, t_msh *f)
 {
 	char	*tmp;
 	char	*tmp2;
 
+	if (ft_strcmp(path, "~") == 0)
+	{
+		chdir(f->sh.p_home);
+		return (1);
+	}
 	if (ft_strcmp(".", path) == 0)
 		return (0);
 	tmp2 = ft_strjoin("/", path);
@@ -58,7 +63,7 @@ int			simple_path(char *path)
 	return (1);
 }
 
-int			cd(char *path, char **matrix_path, int i)
+int			cd(char *path, char **matrix_path, int i, t_msh *f)
 {
 	if (ft_strchr(path, '/'))
 	{
@@ -70,7 +75,7 @@ int			cd(char *path, char **matrix_path, int i)
 				if (!cutting_last_dir(matrix_path[i]))
 					return (ft_memdel_int((void**)&matrix_path));
 			}
-			else if (!(simple_path(matrix_path[i])))
+			else if (!(simple_path(matrix_path[i], f)))
 				return (ft_memdel_int((void**)&matrix_path));
 			i++;
 		}
@@ -81,44 +86,89 @@ int			cd(char *path, char **matrix_path, int i)
 		if (!cutting_last_dir(path))
 			return (0);
 	}
-	else if (!simple_path(path))
+	else if (!simple_path(path, f))
 		return (0);
 	return (1);
 }
 
-void		validation_cd_command(char **matrix, t_msh *f, t_list *e)
+void		cd_command_home(t_msh *f, t_list *e)
 {
 	char	*old_pwd;
 	char	*new_pwd;
 
-	if (ft_matrixlen(matrix) == 1)
+	old_pwd = ft_strdup(getcwd(NULL, 0));
+	new_pwd = ft_strdup(f->sh.p_home);
+	if ((chdir(new_pwd)) == 0)
+	{
+		ft_lstedit(e, "PWD", new_pwd);
+		ft_lstedit(e, "OLDPWD", old_pwd);
+	}
+	ft_memdel((void**)&old_pwd);
+	ft_memdel((void**)&new_pwd);
+}
+
+void		cd_command_minus(t_list *e)
+{
+	char	*tmp_pwd;
+	char	*new_pwd;
+	t_list	*tmp;
+
+	tmp = e;
+	while (tmp)
+	{
+		tmp_pwd = ft_strsub(tmp->content, 0, 6);
+		if (ft_strcmp(tmp_pwd, "OLDPWD") == 0)
+		{
+			new_pwd = ft_strsub(tmp->content, 7, ft_strlen(tmp->content));
+			if (chdir(new_pwd) == 0)
+				ft_memdel((void**)&new_pwd);
+		}
+		ft_memdel((void**)&tmp_pwd);
+		tmp = tmp->next;
+	}
+	free(tmp);
+}
+
+int		general(char *direction, t_list *e)
+{
+	char	*old_pwd;
+
+	old_pwd = ft_strdup(getcwd(NULL, 0));
+	if ((chdir(direction)) == 0)
+	{
+		ft_lstedit(e, "PWD", direction);
+		ft_lstedit(e, "OLDPWD", old_pwd);
+		ft_memdel((void**)&old_pwd);
+		return (1);
+	}
+	ft_memdel((void**)&old_pwd);
+	return (0);
+}
+
+void		validation_cd_command(char **matrix, t_msh *f, t_list *e)
+{
+	if (general(matrix[1], e))
+		return ;
+	else if (ft_matrixlen(matrix) == 1)
 		cd_command_len_1(f, e);
 	else if (ft_strcmp(matrix[1], "/") == 0)
-	{
-		old_pwd = ft_strdup(getcwd(NULL, 0));
-		new_pwd = ft_strdup("/");
-		if ((chdir(new_pwd)) == 0)
-		{
-			ft_lstedit(e, "PWD", new_pwd);
-			ft_lstedit(e, "OLDPWD", old_pwd);
-		}
-		ft_memdel((void**)&old_pwd);
-		ft_memdel((void**)&new_pwd);
-	}
+		cd_command_home(f, e);
+	else if (ft_strcmp(matrix[1], "-") == 0)
+		cd_command_minus(e);
 	else if (ft_matrixlen(matrix) == 2)
-		cd_command(matrix[1], e, 0);
+		cd_command(matrix[1], e, 0, f);
 	else if (ft_matrixlen(matrix) >= 3)
 		ft_printfcolor("ERROR: TOO MANY ARGUMENTS\n", 31);
 }
 
-void		cd_command(char *pwd, t_list *e, int i)
+void		cd_command(char *pwd, t_list *e, int i, t_msh *f)
 {
 	char	**mtrx;
 	char	*old_pwd;
 
 	mtrx = NULL;
 	old_pwd = ft_strdup(getcwd(NULL, 0));
-	if (cd(pwd, mtrx, i))
+	if (cd(pwd, mtrx, i, f))
 	{
 		ft_lstedit(e, "PWD", getcwd(NULL, 0));
 		ft_lstedit(e, "OLDPWD", old_pwd);

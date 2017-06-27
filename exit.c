@@ -14,7 +14,6 @@
 
 void	exitazo(t_list *e, t_msh *f)
 {
-	ft_memdel((void**)&f->sh.p_bin);
 	ft_memdel((void**)&f->sh.p_home);
 	ft_memdel((void**)&f->sh.p_user);
 	ft_memdel((void**)&f);
