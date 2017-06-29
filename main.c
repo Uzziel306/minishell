@@ -6,13 +6,13 @@
 /*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:30:05 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:30:37 by asolis           ###   ########.fr       */
+/*   Updated: 2017/06/28 17:52:24 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char				*readline()
+char				*readline(void)
 {
 	char			buffsazo[1025];
 	int				ret;
@@ -33,25 +33,25 @@ void				get_command(char *str, t_msh *f, t_list *e)
 {
 	char			**matrix;
 
-	matrix = ft_strsplit(str, ' ');
+	matrix = ft_split_whitespaces(str);
 	if (matrix[0] != NULL)
 	{
-	if (matrix[0][0] == '.' && matrix[0][1] == '/')
-		executable(matrix, e);
-	else if (ft_strcmp(matrix[0], "pwd") == 0)
-		ft_printfcolor("%s\n", getcwd(NULL, 0), 34);
-	else if (ft_strcmp(matrix[0], "echo") == 0)
-		validation_echo(matrix, e);
-	else if (ft_strcmp(matrix[0], "cd") == 0)
-		validation_cd_command(matrix, f, e);
-	else if (ft_strcmp(matrix[0], "env") == 0)
-		ft_printlst(e);
-	else if (ft_strcmp(matrix[0], "setenv") == 0)
-		setenv_validation(e, matrix, f);
-	else if (ft_strcmp(matrix[0], "unsetenv") == 0)
-		unsetenv_validation(e, matrix);
-	else if (!path_command(matrix, e))
-		ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
+		if (matrix[0][0] == '.' && matrix[0][1] == '/')
+			executable(matrix, e);
+		else if (ft_strcmp(matrix[0], "pwd") == 0)
+			ft_printfcolor("%s\n", getcwd(NULL, 0), 34);
+		else if (ft_strcmp(matrix[0], "echo") == 0)
+			validation_echo(matrix, e);
+		else if (ft_strcmp(matrix[0], "cd") == 0)
+			validation_cd_command(matrix, f, e);
+		else if (ft_strcmp(matrix[0], "env") == 0)
+			ft_printlst(e);
+		else if (ft_strcmp(matrix[0], "setenv") == 0)
+			setenv_validation(e, matrix, f);
+		else if (ft_strcmp(matrix[0], "unsetenv") == 0)
+			unsetenv_validation(e, matrix);
+		else if (!path_command(matrix, e))
+			ft_printfcolor("%s %s\n", matrix[0], 31, ": command not found", 31);
 	}
 	ft_memdel((void**)&matrix);
 }

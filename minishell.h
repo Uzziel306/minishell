@@ -58,14 +58,17 @@ void				ft_lstedit(t_list *e, char *name, char *value);
 void				ft_lstdeletenode(t_list *e, int nb);
 char				**ft_lst_to_mtx(t_list *e);
 /*
-** cd command functions used in the proyect.. cd_command.c
+** cd command functions used in the proyect.. cd_command.c and cd_command_2.c
 */
 void				validation_cd_command(char **matrix, t_msh *f, t_list *e);
 void				cd_command_len_1(t_msh *f, t_list *e);
 void				cd_command(char *pwd, t_list *e, int i, t_msh *f);
+void				cd_command_minus(t_list *e);
+void				cd_command_home(t_msh *f, t_list *e);
 int					cutting_last_dir(char *path);
 int					simple_path(char *path, t_msh *f);
 int					cd(char *path, char **matrix_path, int i, t_msh *f);
+int					general(char *direction, t_list *e);
 /*
 ** echo command functions used in the proyect.. echo_command.c
 */
@@ -108,7 +111,8 @@ char				*get_path(t_list *e);
 void				executable(char **mtx, t_list *e);
 int					path_command(char **mtx, t_list *e);
 /*
-** exit function used in the proyect.. run_command.c
+** exit function used in the proyect.. exit.c
 */
 void				exitazo(t_list *e, t_msh *f);
+char				**ft_split_whitespaces(char *str);
 #endif

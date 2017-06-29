@@ -56,9 +56,10 @@ char		**ft_lst_to_mtx(t_list *e)
 	mtx = (char**)malloc(sizeof(char*) * (i + 1));
 	tmp = e;
 	mtx[i] = NULL;
+	i = -1;
 	while (tmp)
 	{
-		mtx[--i] = ft_strdup(tmp->content);
+		mtx[++i] = ft_strdup(tmp->content);
 		tmp = tmp->next;
 	}
 	free(tmp);
