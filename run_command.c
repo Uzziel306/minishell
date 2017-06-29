@@ -6,33 +6,11 @@
 /*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:33:53 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:33:53 by asolis           ###   ########.fr       */
+/*   Updated: 2017/06/28 17:56:23 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char			*get_path(t_list *e)
-{
-	char	*tmp_path;
-	char	*tmp_pwd;
-	t_list	*tmp;
-
-	tmp = e;
-	while (tmp)
-	{
-		tmp_path = ft_strsub(tmp->content, 0, 4);
-		if (ft_strcmp(tmp_path, "PATH") == 0)
-		{
-			tmp_pwd = ft_strsub(tmp->content, 5, ft_strlen(tmp->content));
-			return(tmp_pwd);
-		}
-		ft_memdel((void**)&tmp_path);
-		tmp = tmp->next;
-	}
-	free(tmp);
-	return (0);
-}
 
 static int		forkzazo(char **matrix, t_list *e, char *path)
 {
@@ -50,7 +28,6 @@ static int		forkzazo(char **matrix, t_list *e, char *path)
 			ft_memdel((void**)&env);
 			return (1);
 		}
-
 	}
 	if (pid > 0)
 		pid = wait(0);
@@ -68,7 +45,7 @@ int				bin_command(char **mtx, t_list *e)
 	return (0);
 }
 
-int				command(char  **path_mtx, char **mtx, t_list *e)
+int				command(char **path_mtx, char **mtx, t_list *e)
 {
 	int			i;
 	char		*tmp;

@@ -26,7 +26,7 @@ int			echo(char *c)
 			ft_printfbasic("\n");
 			i++;
 		}
-		else
+		else if (c[i] != 34)
 			ft_putchar(c[i]);
 		i++;
 	}

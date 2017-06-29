@@ -6,9 +6,11 @@ SRC		=	main.c \
 			helper.c \
 			run_command.c \
 			cd_command.c \
+			cd_command_2.c \
 			get_env.c \
 			helper_2.c \
 			lists_functions.c \
+			ft_split_whitespaces.c \
 			exit.c
 
 OBJ		= $(SRC:.c=.o)

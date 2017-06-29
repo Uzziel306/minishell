@@ -6,7 +6,7 @@
 /*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:21:50 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:21:51 by asolis           ###   ########.fr       */
+/*   Updated: 2017/06/28 17:50:32 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,17 @@ void			set_env(t_list *e, char *name, char *value)
 	t_list		*env_node;
 
 	if (value[0] == '"' && value[ft_strlen(value) - 1] == '"')
-		{
-			special = ft_strsub(value, 1, ft_strlen(value) - 2);
-			tmp2 = ft_strjoin(name, "=");
-			tmp = ft_strjoin(tmp2, special);
-			env_node = ft_lstnew(tmp, ft_strlen(tmp) + 1);
-			ft_lstaddback(&e, env_node);
-			ft_memdel((void**)&special);
-			ft_memdel((void**)&tmp);
-			ft_memdel((void**)&tmp2);
-			return ;
-		}
+	{
+		special = ft_strsub(value, 1, ft_strlen(value) - 2);
+		tmp2 = ft_strjoin(name, "=");
+		tmp = ft_strjoin(tmp2, special);
+		env_node = ft_lstnew(tmp, ft_strlen(tmp) + 1);
+		ft_lstaddback(&e, env_node);
+		ft_memdel((void**)&special);
+		ft_memdel((void**)&tmp);
+		ft_memdel((void**)&tmp2);
+		return ;
+	}
 	tmp2 = ft_strjoin(name, "=");
 	tmp = ft_strjoin(tmp2, value);
 	env_node = ft_lstnew(tmp, ft_strlen(tmp) + 1);
