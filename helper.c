@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   helper.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: asolis <asolis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:22:40 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:23:01 by asolis           ###   ########.fr       */
+/*   Updated: 2017/08/30 19:08:29 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void		ft_error_path(char *pwd)
+int			ft_error_path(char *pwd)
 {
 	ft_printfbasic("-bash: cd: ");
 	ft_printfbasic("%s", pwd);
 	ft_printfbasic(": No such file or directory\n");
+	return (0);
 }
 
 void		zap(t_msh *f)

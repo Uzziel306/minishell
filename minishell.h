@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: asolis <asolis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:37:11 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:37:14 by asolis           ###   ########.fr       */
+/*   Updated: 2017/09/01 16:11:21 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,13 @@ char				**ft_lst_to_mtx(t_list *e);
 */
 void				validation_cd_command(char **matrix, t_msh *f, t_list *e);
 void				cd_command_len_1(t_msh *f, t_list *e);
-void				cd_command(char *pwd, t_list *e, int i, t_msh *f);
+void				cd_command(char *pwd, char	*old_pwd, t_list *e, t_msh *f);
 void				cd_command_minus(t_list *e);
 void				cd_command_home(t_msh *f, t_list *e);
 int					cutting_last_dir(char *path);
 int					simple_path(char *path, t_msh *f);
-int					cd(char *path, char **matrix_path, int i, t_msh *f);
-int					general(char *direction, t_list *e);
+char				*cd(char **mtx, char *pwd, t_msh *f, t_list *e);
+int					general(char *direction, char	*old_pwd, t_list *e);
 /*
 ** echo command functions used in the proyect.. echo_command.c
 */
@@ -90,8 +90,9 @@ int					unset_env(t_list *e, char *name, int i);
 /*
 ** helper functions used in the proyect.. helper.c helper_2.c
 */
-void				ft_error_path(char *pwd);
+int					ft_error_path(char *pwd);
 void				zap(t_msh *f);
+char				*get_last_part();
 void				ft_putmatrix(char **matrix);
 void				ft_printlst(t_list *e);
 void				free_shit(char *a, char *b, char *c);
@@ -115,4 +116,9 @@ int					path_command(char **mtx, t_list *e);
 */
 void				exitazo(t_list *e, t_msh *f);
 char				**ft_split_whitespaces(char *str);
+void				pwd(void);
+void				changing_pwd_oldpwd(char *new_pwd, char *old_pwd, t_list *e);
+char				*join_path(char *str, char *str2);
+char				*cutting_last_path(char *str);
+void				ft_strswap(char **a, char **b);
 #endif

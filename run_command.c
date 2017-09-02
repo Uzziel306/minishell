@@ -25,13 +25,13 @@ static int		forkzazo(char **matrix, t_list *e, char *path)
 	{
 		if (execve(path, matrix, env) != -1)
 		{
-			ft_memdel((void**)&env);
+			ft_free_mtx(env);
 			return (1);
 		}
 	}
 	if (pid > 0)
 		pid = wait(0);
-	ft_memdel((void**)&env);
+	ft_free_mtx(env);;
 	return (0);
 }
 
@@ -63,6 +63,8 @@ int				command(char **path_mtx, char **mtx, t_list *e)
 			ft_memdel((void**)&tmp2);
 			return (1);
 		}
+		ft_memdel((void**)&tmp);
+		ft_memdel((void**)&tmp2);
 	}
 	return (0);
 }
@@ -79,11 +81,11 @@ int				path_command(char **mtx, t_list *e)
 	if (command(path_mtx, mtx, e))
 	{
 		ft_memdel((void**)&tmp_path);
-		ft_memdel((void**)&path_mtx);
+		ft_free_mtx(path_mtx);
 		return (1);
 	}
 	ft_memdel((void**)&tmp_path);
-	ft_memdel((void**)&path_mtx);
+	ft_free_mtx(path_mtx);
 	return (0);
 }
 

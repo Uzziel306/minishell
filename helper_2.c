@@ -3,14 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   helper_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: asolis <asolis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:23:45 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/28 17:49:25 by asolis           ###   ########.fr       */
+/*   Updated: 2017/09/01 17:04:36 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char		*get_last_part()
+{
+	char	*pwd;
+	char	*res;
+	char	*i;
+
+	pwd = getcwd(NULL, 0);
+	if (ft_strlen(pwd) == 1)
+	{
+		 ft_strdel(&pwd);
+		return (res = ft_strdup("/"));
+	}
+	i = ft_strrchr(pwd, '/');
+	res = ft_strsub(pwd,(ft_strlen(pwd) - ft_strlen(i)) + 1, ft_strlen(pwd));
+	 ft_strdel(&pwd);
+	return (res);
+}
 
 int			ft_memdel_int(void **ap)
 {
@@ -36,22 +54,6 @@ void		free_shit(char *a, char *b, char *c)
 	ft_memdel((void**)&c);
 }
 
-void		cd_command_len_1(t_msh *f, t_list *e)
-{
-	char	*old_pwd;
-	char	*new_pwd;
-
-	old_pwd = ft_strdup(getcwd(NULL, 0));
-	new_pwd = ft_strdup(f->sh.p_home);
-	if ((chdir(new_pwd)) == 0)
-	{
-		ft_lstedit(e, "PWD", new_pwd);
-		ft_lstedit(e, "OLDPWD", old_pwd);
-	}
-	ft_memdel((void**)&old_pwd);
-	ft_memdel((void**)&new_pwd);
-}
-
 char		*get_path(t_list *e)
 {
 	char	*tmp_path;
@@ -65,6 +67,7 @@ char		*get_path(t_list *e)
 		if (ft_strcmp(tmp_path, "PATH") == 0)
 		{
 			tmp_pwd = ft_strsub(tmp->content, 5, ft_strlen(tmp->content));
+			ft_memdel((void**)&tmp_path);
 			return (tmp_pwd);
 		}
 		ft_memdel((void**)&tmp_path);

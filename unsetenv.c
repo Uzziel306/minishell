@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unsetenv.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: asolis <asolis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:34:56 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:35:10 by asolis           ###   ########.fr       */
+/*   Updated: 2017/08/30 18:53:07 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,11 @@ ft_strlen(tmp->content) - ft_strlen(x));
 				ft_memdel((void**)&tamp);
 				return (i);
 			}
+			ft_memdel((void**)&tamp);
 		}
 		i++;
 		tmp = tmp->next;
 	}
 	ft_memdel((void**)&tmp);
-	ft_memdel((void**)&tamp);
 	return (0);
 }

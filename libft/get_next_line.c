@@ -11,100 +11,65 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdlib.h>
-#include <unistd.h>
 
-static t_gnl	*init_gnl(int fd)
+int	ft_len(char *s)
 {
-	t_gnl	*gnl;
+	int i;
+	int j;
 
-	if (!(gnl = malloc(sizeof(*gnl))))
-		return (NULL);
-	gnl->next = NULL;
-	gnl->tmp = ft_strdup("");
-	if (gnl->tmp == NULL)
-		return (NULL);
-	gnl->fd = fd;
-	return (gnl);
+	j = 0;
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == '\n')
+			j++;
+		i++;
+	}
+	return (j);
 }
 
-static t_gnl	*retrieve_gnl_for_fd(t_gnl *gnl, int fd)
+int	ft_solve(char **line, char *stc_buf)
 {
-	while (gnl)
+	char *i;
+	char *temp;
+
+	if ((i = ft_strchr(stc_buf, '\n')) != 0)
 	{
-		if (gnl->fd == fd)
-			return (gnl);
-		else if (!gnl->next)
-			break ;
-		gnl = gnl->next;
+		temp = ft_strsub(stc_buf, 0, ft_strlen(stc_buf) - ft_strlen(i));
+		ft_memmove(stc_buf, &i[1], ft_strlen(&i[1]) + 1);
+		*line = ft_strdup(temp);
+		return (1);
 	}
-	if (gnl == NULL)
-		return (NULL);
-	else if (!(gnl->next = init_gnl(fd)))
-		return (NULL);
-	gnl = gnl->next;
-	return (gnl);
+	if (ft_len(stc_buf) == 0 && ft_strlen(stc_buf) > 0)
+	{
+		*line = ft_strdup(stc_buf);
+		*stc_buf = '\0';
+		return (1);
+	}
+	return (0);
 }
 
-static int		get_ret(t_gnl *gnl, char **line, int ret)
+int	get_next_line(const int fd, char **line)
 {
-	char	*newline;
-	char	buff[BUFF_SIZE + 1];
-	char	*tmp;
+	static char *stc_buff = NULL;
+	char		buff[BUFF_SIZE + 1];
+	char		*temp2;
+	int			ret;
 
-	newline = ft_strchr(gnl->tmp, '\n');
-	if (newline == NULL)
-	{
-		if ((ret = read(gnl->fd, buff, BUFF_SIZE)) < 0)
-			return (-1);
-		buff[ret] = '\0';
-		tmp = ft_strjoin(gnl->tmp, buff);
-		if (tmp == NULL)
-			return (-1);
-		free(gnl->tmp);
-		gnl->tmp = tmp;
-		return (ret);
-	}
-	*line = ft_strsub(gnl->tmp, 0, newline - gnl->tmp);
-	tmp = ft_strsub(newline, 1, ft_strlen(newline) - 1);
-	if (*line == NULL || tmp == NULL)
+	if (fd == -1 || BUFF_SIZE <= 0)
 		return (-1);
-	free(gnl->tmp);
-	gnl->tmp = tmp;
-	return (-2);
-}
-
-static int		get_line(t_gnl *gnl, char **line)
-{
-	int		ret;
-
-	ret = 1;
-	while (ret != 0)
+	if (stc_buff == NULL)
+		stc_buff = ft_strnew(0);
+	while (!ft_strchr(stc_buff, '\n'))
 	{
-		ret = get_ret(gnl, line, ret);
-		if (ret == -2)
-			return (1);
+		ret = read(fd, buff, BUFF_SIZE);
 		if (ret == -1)
 			return (-1);
+		if (ret == 0)
+			break ;
+		buff[ret] = '\0';
+		temp2 = ft_strjoin(stc_buff, buff);
+		stc_buff = temp2;
 	}
-	if (*gnl->tmp == '\0')
-		return (0);
-	*line = gnl->tmp;
-	gnl->tmp = ft_strdup("");
-	if (gnl->tmp == NULL)
-		return (-1);
-	return (1);
-}
-
-int				get_next_line(int const fd, char **line)
-{
-	static t_gnl	*gnl = NULL;
-	t_gnl			*fd_gnl;
-
-	if (gnl == NULL)
-		gnl = init_gnl(fd);
-	fd_gnl = retrieve_gnl_for_fd(gnl, fd);
-	if (fd_gnl == NULL || line == NULL)
-		return (-1);
-	return (get_line(fd_gnl, line));
+	return (ft_solve(line, stc_buff));
 }

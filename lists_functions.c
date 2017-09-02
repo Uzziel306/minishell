@@ -62,7 +62,6 @@ char		**ft_lst_to_mtx(t_list *e)
 		mtx[++i] = ft_strdup(tmp->content);
 		tmp = tmp->next;
 	}
-	free(tmp);
 	return (mtx);
 }
 
@@ -102,6 +101,7 @@ void		ft_lstedit(t_list *e, char *name, char *value)
 	ft_lstaddnth(e, lst_tmp, i);
 	ft_memdel((void**)&tmp);
 	ft_memdel((void**)&tmp2);
+
 }
 
 void		ft_lstdeletenode(t_list *e, int nb)

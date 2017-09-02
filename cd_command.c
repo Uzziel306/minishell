@@ -3,121 +3,90 @@
 /*                                                        :::      ::::::::   */
 /*   cd_command.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asolis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: asolis <asolis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/22 05:15:05 by asolis            #+#    #+#             */
-/*   Updated: 2017/06/22 05:18:27 by asolis           ###   ########.fr       */
+/*   Updated: 2017/09/01 17:12:41 by asolis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int			cutting_last_dir(char *path)
+char			*cd(char **mtx, char *pwd, t_msh *f, t_list *e)
 {
-	char	*tmp;
-	char	*j;
-
-	j = ft_strrchr(getcwd(NULL, 0), '/');
-	tmp = ft_strsub(getcwd(NULL, 0), 0, ft_strlen
-(getcwd(NULL, 0)) - ft_strlen(j));
-	if (ft_strlen(tmp) == 0)
-	{
-		chdir("/");
-		return (1);
-	}
-	if (chdir(tmp) == -1)
-	{
-		ft_memdel((void**)&tmp);
-		ft_printfbasic("-bash: cd: %s: No such file or directory\n", path);
-		return (0);
-	}
-	chdir(tmp);
-	ft_memdel((void**)&tmp);
-	return (1);
-}
-
-int			simple_path(char *path, t_msh *f)
-{
+	int		i;
 	char	*tmp;
 	char	*tmp2;
 
-	if (ft_strcmp(path, "~") == 0)
+	tmp = ft_strdup(pwd);
+	i = -1;
+	while (mtx[++i] != NULL)
 	{
-		chdir(f->sh.p_home);
-		return (1);
-	}
-	if (ft_strcmp(".", path) == 0)
-		return (0);
-	tmp2 = ft_strjoin("/", path);
-	tmp = ft_strjoin(getcwd(NULL, 0), tmp2);
-	if (chdir(tmp) == -1)
-	{
-		ft_error_path(tmp);
-		ft_memdel((void**)&tmp);
-		ft_memdel((void**)&tmp2);
-		return (0);
-	}
-	chdir(tmp);
-	ft_memdel((void**)&tmp);
-	ft_memdel((void**)&tmp2);
-	return (1);
-}
-
-int			cd(char *path, char **matrix_path, int i, t_msh *f)
-{
-	if (ft_strchr(path, '/'))
-	{
-		matrix_path = ft_strsplit(path, '/');
-		while (matrix_path[i] != NULL)
+		if (ft_strcmp("..", mtx[i]) == 0)
 		{
-			if (ft_strcmp(matrix_path[i], "..") == 0)
-			{
-				if (!cutting_last_dir(matrix_path[i]))
-					return (ft_memdel_int((void**)&matrix_path));
-			}
-			else if (!(simple_path(matrix_path[i], f)))
-				return (ft_memdel_int((void**)&matrix_path));
-			i++;
+			tmp2 = cutting_last_path(tmp);
+			ft_strswap(&tmp2, &tmp);
+			ft_memdel((void**)&tmp2);
 		}
-		ft_memdel_int((void**)&matrix_path);
+		else
+		{
+			tmp2 = join_path(tmp, mtx[i]);
+			ft_strswap(&tmp2, &tmp);
+			ft_memdel((void**)&tmp2);
+		}
 	}
-	else if (ft_strcmp(path, "..") == 0)
-	{
-		if (!cutting_last_dir(path))
-			return (0);
-	}
-	else if (!simple_path(path, f))
-		return (0);
-	return (1);
+	if (chdir(tmp) == 0)
+		return (tmp);
+	ft_memdel((void**)&tmp);
+	return (0);
 }
 
 void		validation_cd_command(char **matrix, t_msh *f, t_list *e)
 {
-	if (general(matrix[1], e))
-		return ;
-	else if (ft_matrixlen(matrix) == 1)
+	char	*old_pwd;
+	char	*mierda;
+
+	old_pwd = getcwd(NULL, 0);
+	if (ft_matrixlen(matrix) > 1)
+		mierda = ft_strsub(matrix[1], 2, ft_strlen(matrix[1]));
+	if (ft_matrixlen(matrix) == 1)
 		cd_command_len_1(f, e);
 	else if (ft_strcmp(matrix[1], "/") == 0)
 		cd_command_home(f, e);
 	else if (ft_strcmp(matrix[1], "-") == 0)
 		cd_command_minus(e);
+	else if (ft_strncmp(matrix[1], "~", 1) == 0)
+			cd_command(mierda, f->sh.p_home, e, f);
 	else if (ft_matrixlen(matrix) == 2)
-		cd_command(matrix[1], e, 0, f);
+		cd_command(matrix[1], old_pwd, e, f);
 	else if (ft_matrixlen(matrix) >= 3)
-		ft_printfcolor("ERROR: TOO MANY ARGUMENTS\n", 31);
+		ft_printfcolor("%s", "ERROR: TOO MANY ARGUMENTS\n", 31);
+	if (ft_matrixlen(matrix) > 1)
+		ft_strdel(&mierda);
+	ft_strdel(&old_pwd);
 }
 
-void		cd_command(char *pwd, t_list *e, int i, t_msh *f)
+void		cd_command(char *pwd, char	*old_pwd, t_list *e, t_msh *f)
 {
 	char	**mtrx;
-	char	*old_pwd;
-
-	mtrx = NULL;
-	old_pwd = ft_strdup(getcwd(NULL, 0));
-	if (cd(pwd, mtrx, i, f))
-	{
-		ft_lstedit(e, "PWD", getcwd(NULL, 0));
-		ft_lstedit(e, "OLDPWD", old_pwd);
-	}
-	ft_memdel((void**)&old_pwd);
+	char	*i;
+	char	*new_pwd;
+	char	*aux;
+	int		a;
+	aux = getcwd(NULL, 0);
+	if (!(a = general(pwd, old_pwd, e)))
+		chdir(aux);
+	else if ((i = ft_strchr(pwd, '/')) && a == 0)
+		{
+			mtrx = ft_strsplit(pwd, '/');
+			if ((new_pwd = cd(mtrx, old_pwd, f, e)))
+				{
+					changing_pwd_oldpwd(new_pwd, old_pwd, e);
+					ft_strdel(&new_pwd);
+				}
+			else
+				ft_printfcolor("%s%s\n", "cd: no such file or directory: ", 31, pwd, 31);
+			ft_free_mtx(mtrx);
+		}
+	ft_strdel(&aux);
 }
