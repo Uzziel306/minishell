@@ -24,10 +24,9 @@ static int		forkzazo(char **matrix, t_list *e, char *path)
 	if (pid == 0)
 	{
 		if (execve(path, matrix, env) != -1)
-		{
 			ft_free_mtx(env);
-			return (1);
-		}
+		ft_printfbasic("msh: no execution rights\n");
+		exit(1);
 	}
 	if (pid > 0)
 		pid = wait(0);
